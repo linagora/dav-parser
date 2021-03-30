@@ -5,7 +5,7 @@
   "keywords": [],
   "main": "dist/dav-parser.js",
   "module": "dist/dav-parser.js",
-  "typings": "types/dav-parser.d.ts",
+  "typings": "src/types/dav-parser.d.ts",
   "files": [
     "dist"
   ],

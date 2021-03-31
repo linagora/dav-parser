@@ -1,4 +1,4 @@
-import * as ICAL from 'ical.js';
+import { Component, parse as parseIcs, Event, Property } from 'ical.js';
 import { Attendee, CalendarEventObject, Dictionary, JcalProperty, RRule } from '../types/dav-parser';
 import { icalProperties } from './const';
 
@@ -9,9 +9,9 @@ import { icalProperties } from './const';
  * @returns CalendarEventObject[]   an array of parsed events
  */
 export function parse(ics: string): CalendarEventObject[] {
-  const jcal = ICAL.parse(ics);
-  const component: ICAL.Component = new ICAL.Component(jcal);
-  const subComponents: ICAL.Component[] = component.getAllSubcomponents();
+  const jcal = parseIcs(ics);
+  const component: Component = new Component(jcal);
+  const subComponents: Component[] = component.getAllSubcomponents();
 
   return subComponents.map(componentToEvent);
 }
@@ -22,8 +22,8 @@ export function parse(ics: string): CalendarEventObject[] {
  * @param component ICAL.Component the ical.js component to convert into an event object.
  * @returns CalendarEventObject the parsed event object
  */
-const componentToEvent = (component: ICAL.Component): CalendarEventObject => {
-  const event: ICAL.Event = new ICAL.Event(component);
+const componentToEvent = (component: Component): CalendarEventObject => {
+  const event: Event = new Event(component);
 
   return parseEvent(event) as CalendarEventObject;
 }
@@ -34,7 +34,7 @@ const componentToEvent = (component: ICAL.Component): CalendarEventObject => {
  * @param attendees ICAL.property the attendee list in jcal format
  * @returns Attendee[]
  */
-const parseAttendees = (attendees: ICAL.Property[]): Attendee[] => {
+const parseAttendees = (attendees: Property[]): Attendee[] => {
   return attendees.map(attendee => {
     const attendeeJson = attendee.toJSON();
 
@@ -48,7 +48,7 @@ const parseAttendees = (attendees: ICAL.Property[]): Attendee[] => {
  * @param event ICAL.Event
  * @returns CalendarEventObject
  */
-const parseEvent = (event: ICAL.Event): CalendarEventObject => {
+const parseEvent = (event: Event): CalendarEventObject => {
   const eventObject: CalendarEventObject = {
     id: event.uid,
     allDay: event.startDate.isDate,
@@ -65,7 +65,7 @@ const parseEvent = (event: ICAL.Event): CalendarEventObject => {
   };
 
   // Handle the properties that are exposed in the event jcal
-  const eventComponent: ICAL.Component = event.component;
+  const eventComponent: Component = event.component;
   const jcalJson = eventComponent.toJSON();
   const jcalProps = parseJcalProperties(jcalJson);
   const alarm = parseJcalAlarm(jcalJson);

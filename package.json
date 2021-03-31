@@ -1,14 +1,12 @@
 {
   "name": "dav-parser",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "caldav ics parser",
   "keywords": [],
-  "main": "dist/dav-parser.js",
-  "module": "dist/dav-parser.js",
+  "main": "dist/dav-parser.umd.js",
+  "module": "dist/dav-parser.esm.js",
+  "type": "module",
   "typings": "src/types/dav-parser.d.ts",
-  "files": [
-    "dist"
-  ],
   "author": "Khaled FERJANI <kferjani@linagora.com>",
   "license": "MIT",
   "engines": {
@@ -22,7 +20,9 @@
     "start": "rollup -c rollup.config.ts -w",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:prod": "npm run lint && npm run test -- --no-cache"
+    "test:prod": "npm run lint && npm run test -- --no-cache",
+    "postinstall": "npm run build"
+
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.1.0",
@@ -35,7 +35,6 @@
     "jest-config": "^26.6.3",
     "rimraf": "^2.6.2",
     "rollup": "2.42.0",
-    "rollup-plugin-sourcemaps": "^0.4.2",
     "rollup-plugin-terser": "^7.0.2",
     "ts-jest": "^26.5.4",
     "ts-node": "^9.1.1",

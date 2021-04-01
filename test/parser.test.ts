@@ -1,6 +1,6 @@
 import { parse } from '../src/lib/parser';
 import { CalendarEventObject, Attendee } from '../src/types/dav-parser';
-import { simpleIcs, customPropertiesIcs, recurringEventIcs } from './const';
+import { simpleIcs, customPropertiesIcs, recurringEventIcs, sabreIcs } from './const';
 
 describe('the parse function', () => {
   const assertAttendeeParsing = (attendee: Attendee, partstat: string, email: string, cn: string) => {
@@ -48,4 +48,10 @@ describe('the parse function', () => {
     expect(events[0].alarm?.attendee).toEqual('mailto:kferjani@linagora.com');
     expect(events[0].alarm?.trigger).toEqual('-PT15M');
   });
+
+  it('should work with non event components present in the ics', () => {
+    const events: CalendarEventObject[] = parse(sabreIcs);
+
+    expect(events).toHaveLength(1);
+  })
 });

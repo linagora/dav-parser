@@ -13,7 +13,9 @@ export function parse(ics: string): CalendarEventObject[] {
   const component: Component = new Component(jcal);
   const subComponents: Component[] = component.getAllSubcomponents();
 
-  return subComponents.map(componentToEvent);
+  return subComponents
+    .filter((subComponent: Component) => subComponent.name === "vevent")
+    .map(componentToEvent);
 }
 
 /**

@@ -22,7 +22,6 @@
     "test:watch": "jest --watch",
     "test:prod": "npm run lint && npm run test -- --no-cache",
     "postinstall": "npm run build"
-
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.1.0",

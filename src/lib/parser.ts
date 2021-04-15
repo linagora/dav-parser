@@ -14,7 +14,7 @@ export function parse(ics: string): CalendarEventObject[] {
   const subComponents: Component[] = component.getAllSubcomponents();
 
   return subComponents
-    .filter((subComponent: Component) => subComponent.name === "vevent")
+    .filter((subComponent: Component) => subComponent.name === 'vevent')
     .map(componentToEvent);
 }
 
@@ -68,12 +68,11 @@ const parseEvent = (event: Event): CalendarEventObject => {
 
   // Handle the properties that are exposed in the event jcal
   const eventComponent: Component = event.component;
-  const jcalJson = eventComponent.toJSON();
-  const jcalProps = parseJcalProperties(jcalJson);
-  const alarm = parseJcalAlarm(jcalJson);
+  const alarmComponent: Component | null = eventComponent.getFirstSubcomponent('valarm');
+  const jcalProps = parseJcalProperties(eventComponent.toJSON());
 
-  if (Object.keys(alarm)) {
-    eventObject.alarm = alarm;
+  if (alarmComponent) {
+    eventObject.alarm = parseJcalAlarm(alarmComponent);
   }
 
   jcalProps.forEach((prop: JcalProperty) => {
@@ -104,21 +103,18 @@ const parseJcalProperties = (component: any[][][]): JcalProperty[] => {
 }
 
 /**
- * Parse the ICAL.component jcal alarm into a Dictionary
+ * Parse the varalam ICAL.component into a Dictionary
  *
- * @param component any[][][] a jcal array representation of the ICAL.component
+ * @param component ICAL.Component the ICAL.component representation of the valarm
  * @returns Dictionary
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const parseJcalAlarm = (component: any[][][]): Dictionary => {
-  const alarm: string[][] = component[2][0];
+const parseJcalAlarm = (component: Component): Dictionary => {
+  const alarm: string[][] = component.toJSON();
   const alarmValue: Dictionary = {};
 
-  if (alarm?.length && alarm[1]?.length) {
-    alarm[1].forEach(property => {
-      alarmValue[property[0]] =  property[3];
-    });
-  }
+  alarm[1].forEach(prop => {
+    alarmValue[prop[0]] = prop[3]
+  });
 
   return alarmValue;
 }

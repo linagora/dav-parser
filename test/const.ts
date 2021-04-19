@@ -1,3 +1,5 @@
+import { CalendarEventObject } from '../src/types/dav-parser';
+
 export const simpleIcs = `BEGIN:VCALENDAR
 VERSION:2.0
 CALSCALE:GREGORIAN
@@ -130,3 +132,18 @@ SEQUENCE:0
 END:VEVENT
 END:VCALENDAR
 `;
+
+
+export const testEventObject: CalendarEventObject = {
+  id: '123456',
+  title: 'test',
+  start: '2021-03-15T10:00:00',
+  end: '2021-03-15T11:00:00',
+  allDay: false,
+  description: 'simple description',
+  location: 'some location',
+  duration: {
+    hours: 1,
+  },
+  extendedProps: {},
+};

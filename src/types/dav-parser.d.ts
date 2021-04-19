@@ -22,6 +22,8 @@ export interface CalendarEventObject {
 
 export declare function parse(ics: string): CalendarEventObject[];
 
+export declare function translate(event: CalendarEventObject): string;
+
 export declare const icalProperties: string[];
 
 export type Duration = DurationObject | string | number

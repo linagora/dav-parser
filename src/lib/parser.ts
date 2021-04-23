@@ -54,8 +54,8 @@ const parseEvent = (event: Event): CalendarEventObject => {
   const eventObject: CalendarEventObject = {
     id: event.uid,
     allDay: event.startDate.isDate,
-    start: event.startDate.toString(),
-    end: event.endDate.toString(),
+    start: event.startDate.toJSDate(),
+    end: event.endDate.toJSDate(),
     title: event.summary,
     duration: event.duration,
     attendees: parseAttendees(event.attendees),

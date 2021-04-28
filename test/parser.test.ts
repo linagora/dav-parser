@@ -1,6 +1,6 @@
-import { parse } from '../src/lib/parser';
-import { CalendarEventObject, Attendee } from '../src/types/dav-parser';
-import { simpleIcs, customPropertiesIcs, recurringEventIcs, sabreIcs } from './const';
+import { parse, parseFreeBusy } from '../src/lib/parser';
+import { CalendarEventObject, Attendee, FreeBusy } from '../src/types/dav-parser';
+import { simpleIcs, customPropertiesIcs, recurringEventIcs, sabreIcs, freeBusyIcs } from './const';
 
 describe('the parse function', () => {
   const assertAttendeeParsing = (attendee: Attendee, partstat: string, email: string, cn: string) => {
@@ -53,5 +53,29 @@ describe('the parse function', () => {
     const events: CalendarEventObject[] = parse(sabreIcs);
 
     expect(events).toHaveLength(1);
-  })
+  });
+});
+
+describe('the parseFreeBusy function', () => {
+  it('should parse free time information', () => {
+    const [fbObject]: FreeBusy[] = parseFreeBusy(freeBusyIcs);
+
+    expect(fbObject.uid).toEqual('4FD3AD926350');
+    // testing attendee objects
+    expect(fbObject.organizer).toMatchObject({
+      cn: 'Cyrus Daboo',
+      email: 'mailto:cyrus@example.com'
+    });
+    expect(fbObject.attendee).toMatchObject({
+      cn: 'Wilfredo Sanchez Vega',
+      email: 'mailto:wilfredo@example.com'
+    });
+    // testing dates
+    expect(fbObject.start.getTime()).toEqual(1243900800000);
+    expect(fbObject.end.getTime()).toEqual(1244073600000);
+    expect(fbObject.timestamp.getTime()).toEqual(1243973253000);
+    // testing the freebusy property
+    expect(fbObject.freeBusy.start.getTime()).toEqual(1244052000000);
+    expect(fbObject.freeBusy.end.getTime()).toEqual(1244055600000);
+  });
 });

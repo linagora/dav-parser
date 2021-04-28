@@ -1,5 +1,5 @@
-import { Component, parse as parseIcs, Event, Property } from 'ical.js';
-import { Attendee, CalendarEventObject, Dictionary, JcalProperty, RRule } from '../types/dav-parser';
+import { Component, parse as parseIcs, Event, Property, Time } from 'ical.js';
+import { Attendee, CalendarEventObject, Dictionary, FreeBusy, JcalProperty, RRule } from '../types/dav-parser';
 import { icalProperties } from './const';
 
 /**
@@ -117,4 +117,67 @@ const parseJcalAlarm = (component: Component): Dictionary => {
   });
 
   return alarmValue;
+}
+
+/**
+ * Parse a freebusy reply
+ *
+ * @param {string} ics - the vcalendar string containing the vfreebusy component
+ * @returns {FreeBusy[]}
+ */
+export function parseFreeBusy(ics: string): FreeBusy[] {
+  const jcal = parseIcs(ics);
+  const vcalendarComponent = new Component(jcal);
+  const freeBusyComponents = vcalendarComponent.getAllSubcomponents('vfreebusy');
+
+  if (!freeBusyComponents) throw new Error('no busy time information were found');
+
+  return freeBusyComponents.map(parseFreeBusyComponent);
+}
+
+/**
+ * Parse a vfreebusy component
+ * @param {ICAL.Component} component
+ * @returns {FreeBusy}
+ */
+const parseFreeBusyComponent = (component: Component): FreeBusy => {
+  const props: Property[] = component.getAllProperties();
+  const freeBusyObject: Dictionary = {};
+
+  props.forEach(prop => {
+    switch (prop.name) {
+    case 'attendee':
+    case 'organizer':
+      freeBusyObject[prop.name] = parseAttendees([prop])[0];
+      break;
+
+    case 'dtstart':
+      freeBusyObject.start = (prop.getFirstValue() as Time).toJSDate();
+      break;
+
+    case 'dtend':
+      freeBusyObject.end = (prop.getFirstValue() as Time).toJSDate();
+      break;
+
+    case 'dtstamp':
+      freeBusyObject.timestamp = (prop.getFirstValue() as Time).toJSDate();
+      break;
+
+    case 'freebusy': {
+      const { start, end }: Record<string, Time> = prop.getFirstValue();
+
+      freeBusyObject.freeBusy = {
+        start: start.toJSDate(),
+        end: end.toJSDate()
+      }
+      break;
+    }
+
+    default:
+      freeBusyObject[prop.name] = prop.getFirstValue();
+      break;
+    }
+  });
+
+  return freeBusyObject as FreeBusy;
 }

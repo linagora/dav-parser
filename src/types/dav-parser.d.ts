@@ -21,7 +21,7 @@ export interface CalendarEventObject {
 }
 
 export declare function parse(ics: string): CalendarEventObject[];
-
+export declare function parseFreeBusy(ics: string): FreeBusy[];
 export declare function translate(event: CalendarEventObject): string;
 
 export declare const icalProperties: string[];
@@ -90,3 +90,18 @@ export interface RRule {
 export type WeekdayStr = 'MO' | 'TU' | 'WE' | 'TH' | 'FR' | 'SA' | 'SU';
 
 export type ByWeekday = WeekdayStr | number;
+
+export interface FreeBusy {
+  uid: string,
+  attendee: Attendee,
+  organizer: Attendee,
+  freeBusy: Period,
+  start: Date,
+  end: Date,
+  timestamp: Date
+}
+
+export type Period = {
+  start: Date,
+  end: Date
+};
